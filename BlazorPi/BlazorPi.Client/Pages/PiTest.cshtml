@@ -1,0 +1,130 @@
+﻿@page "/pitest"
+@inherits PiTestModel
+<h1>Pi Test</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <h4>π</h4>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="ShowPi" bind="ShowPi" class="form-check-input" style="display:none" />
+                <label class="form-check-label" for="ShowPi">3. <small>@(ShowPi ? "Hide" : "Show") @(PiDecimals.Length) decimals</small></label>
+            </div>
+            <p style="word-break: break-word;margin-top: 7px">
+                @if (ShowPi)
+                {
+                    @PiDecimals
+                }
+            </p>
+            <form>
+                <div class="input-group">
+                    <label for="TestLength" style="width:150px">Generate</label>
+                    <input type="number" id="TestLength" bind="TestLength" class="form-control form-control-sm" min="0" max="2000" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">decimals</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="LineLength" style="width:150px">Add a line each</label>
+                    <input type="number" id="LineLength" bind="LineLength" class="form-control form-control-sm" min="0" max="20" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">decimals</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="SpaceLength" style="width:150px">Add a char each</label>
+                    <input type="number" id="SpaceLength" bind="ChunkLength" class="form-control form-control-sm" min="0" max="20" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">decimals</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="SplitChar" style="width:150px">With <small class="text-muted">(space by default)</small></label>
+                    <input type="text" id="SplitChar" bind="SplitChar" maxlength="1" class="form-control form-control-sm" />
+                    <div class="input-group-append">
+                        <span class="input-group-text">char</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <h4>Pi decimals</h4>
+            <div class="form-group">
+                <label for="Test">3. <small class="text-muted">Enter the pi decimals</small></label>
+                <textarea id="test" class="form-control" rows="20" cols="16" bind="Test"></textarea>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <h4>Result</h4>
+            <div class="form-group">
+                <label>3. <small class="text-muted">(hint: 1415...)</small></label>
+                <p style="word-break: break-word;margin-top: 7px">
+                    @if (!string.IsNullOrEmpty(Test))
+                    {
+                        if (!ResultIsLongest)
+                        {
+                            <strong>@Lcp</strong>@RemainingNumbers
+                        }
+                        else
+                        {
+                            <span ref="TestSpan">@Test</span>
+                        }
+                    }
+                </p>
+            </div>
+            <div class="alert alert-@((PiContainsResult ? "success" : "danger"))">
+                Length: <strong>@CleanTest.Length</strong>
+                @if (!ResultIsLongest)
+                {
+                    <span>- Correct:</span> <strong>@Lcp.Length</strong>
+                }
+            </div>
+            @if (NbErrors > 0)
+            {
+                <div class="alert alert-warning">Errors: <strong>@NbErrors</strong></div>
+            }
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <h4>Help</h4>
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" id="showText" bind="ShowText" class="form-check-input" style="display:none" />
+                    <label class="form-check-label" for="showText">@(ShowText ? "Hide" : "Show") Text 
+                    <small class="text-muted">Converts words to numbers based on length.</small></label>
+                </div>
+            </div>
+            <div class="form-group">
+                @if (ShowText)
+                {
+                    <textarea id="text" rows="20" class="form-control" bind="Text"></textarea><br />
+                    <small class="text-muted">
+                        <strong>Example:</strong> a = 1, aa = 2, ... , aaaaaaaaaa = 0 (10 chars => 0).<br />
+                        <strong>You can use this mnemonics:</strong><br />
+                        <em>I wish I could enumerate Pi easily since all these
+                        horrible mnemonics prevent recalling any of pis sequence more simply</em><br />
+                    </small>
+                    @*<small class="text-muted" style="display:none"><strong>Or this:</strong>
+                        j aime a faire apprendre un nombre utile aux sages<br />
+                        immortel archimede artiste ingénieur<br />
+                        qui de ton jugement peut priser la valeur<br />
+                        pour moi ton problème eut de serieux avantages<br />
+                        jadis mysterieux un problème bloquait<br />
+                        tout l admirable procédé l oeuvre grandiose<br />
+                        que pythagore decouvrit aux anciens grecs<br />
+                        o quadrature vieux tourment du philosophe<br />
+                        insoluble rondeur trop longtemps vous avez<br />
+                        défié pythagore et ses imitateurs<br />
+                        comment intégrer l espace plan circulaire<br />
+                        former un triangle auquel il equivaudra<br />
+                        nouvelle invention archimede inscrira dedans un hexagone<br />
+                        appreciera son aire fonction du rayon<br />
+                        Pas trop ne s y tiendra dedoublera chaque element anterieur<br />
+                        Toujours de l orbe calculée approchera<br />
+                        definira limite enfin l arc le limiteur<br />
+                        de cet inquietant cercle ennemi trop rebelle<br />
+                        professeur enseignez son problème avec zèle<br /></small>*@
+                }
+            </div>
+        </div>
+    </div>
+</div>
