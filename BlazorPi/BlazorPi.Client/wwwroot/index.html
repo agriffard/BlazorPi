@@ -11,17 +11,6 @@
 <body>
     <app>Loading...</app>
     
-    <script type="blazor-boot"></script>
-    <script>
-        Blazor.registerFunction('RawHtml', function (element, value) {
-            element.innerHTML = value;
-            for (var i = element.childNodes.length - 1; i >= 0; i--) {
-                var childNode = element.childNodes[i];
-                element.parentNode.insertAfter(childNode, element);
-            }
-            element.parentNode.removeChild(element);
-            return true;
-        });
-    </script>
+    <script src="_framework/blazor.webassembly.js"></script>
 </body>
 </html>
