@@ -45,7 +45,7 @@ namespace BlazorPi.Client.Pages
             get => Regex.Replace(Test, @"\n|\r|\s|\t|" + SplitChar, "");
         }
 
-        private int _testLength = 500;
+        private int _testLength = 200;
         public string TestLength
         {
             get => _testLength.ToString();
