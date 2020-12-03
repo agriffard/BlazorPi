@@ -1,0 +1,290 @@
+﻿@page "/pitest"
+@using BlazorPi.Services
+@using System.Text
+@using System.Text.RegularExpressions
+<h1>Pi Test</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-sm-6">
+            <h4>Enter decimals</h4>
+            <div class="form-group">
+                <textarea id="test" class="form-control" rows="20" cols="16" @bind="Test"></textarea>
+            </div>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <h4>Result</h4>
+            <div class="form-group">
+                @*<label>3. <small class="text-muted">(hint: 1415...)</small></label>*@
+                <p style="word-break: break-word;margin-top: 15px">
+                    @if (!string.IsNullOrEmpty(Test))
+                    {
+                        if (!ResultIsLongest)
+                        {
+                            <strong>@Lcp</strong>@RemainingNumbers
+                        }
+                        else
+                        {
+                            <span>@((MarkupString)Test.Replace(Environment.NewLine, "<br />"))</span>
+                        }
+                    }
+                </p>
+            </div>
+            <div class="alert alert-@((PiContainsResult ? "success" : "danger"))">
+                Length: <strong>@CleanTest.Length</strong>
+                @if (!ResultIsLongest)
+                {
+                    <span>- Correct:</span> <strong>@Lcp.Length</strong>
+                }
+            </div>
+            @if (NbErrors > 0)
+            {
+                <div class="alert alert-warning">Errors: <strong>@NbErrors</strong></div>
+            }
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <h4>
+                <input type="checkbox" id="ShowPi" @bind="ShowPi" class="form-check-input" style="display:none" />
+                <label class="form-check-label" for="ShowPi">
+                    <span class="oi oi-chevron-@(ShowPi ? "top" : "bottom")" aria-hidden="true"></span>
+                    Solution
+                </label>
+            </h4>
+            @if (ShowPi)
+            {
+                <form>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label for="TestLength" style="width:150px">A π approx. with</label>
+                            <input type="number" id="TestLength" @bind="TestLength" class="form-control form-control-sm" min="0" max="2000" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">decimals</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label for="LineLength" style="width:150px">Add a line every</label>
+                            <input type="number" id="LineLength" @bind="LineLength" class="form-control form-control-sm" min="0" max="20" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">decimals</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label for="SpaceLength" style="width:150px">Add a char every</label>
+                            <input type="number" id="SpaceLength" @bind="ChunkLength" class="form-control form-control-sm" min="0" max="20" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">decimals</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:none">
+                        <div class="input-group">
+                            <label for="SplitChar" style="width:150px">With <small class="text-muted">(space by default)</small></label>
+                            <input type="text" id="SplitChar" @bind="SplitChar" maxlength="1" class="form-control form-control-sm" />
+                            <div class="input-group-append">
+                                <span class="input-group-text">delimiter</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <p style="word-break: break-word;margin-top: 7px;display:none">
+                    @PiDecimals
+                </p>
+            }
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <h4>
+                <input type="checkbox" id="showText" @bind="ShowText" class="form-check-input" style="display:none" />
+                <label class="form-check-label" for="showText"><span class="oi oi-chevron-@(ShowText ? "top" : "bottom")" aria-hidden="true"></span> Tools</label>
+            </h4>
+            @if (ShowText)
+            {
+                <div class="form-group">
+                    <textarea id="text" rows="20" class="form-control" @bind="Text"></textarea>                    
+                </div>
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <small class="text-muted">Converts words to numbers based on length.</small>
+                    </div>
+                    <small class="text-muted">
+                        <strong>Example:</strong> a = 1, aa = 2, ... , aaaaaaaaaa = 0 (10 chars => 0).<br />
+                        <strong>You can use this mnemonics:</strong><br />
+                        <em>
+                            I wish I could enumerate Pi easily since all these
+                            horrible mnemonics prevent recalling any of pis sequence more simply
+                        </em><br />
+                    </small>
+                    <small class="text-muted" style="display:none"><strong>Or this:</strong>
+                        J aime a faire apprendre un nombre utile aux sages
+                        Immortel archimede artiste ingénieur
+                        qui de ton jugement peut priser la valeur
+                        Pour moi ton problème eut de serieux avantages
+                        Jadis mystérieux un problème bloquait
+                        tout l admirable procédé l oeuvre grandiose
+                        que pythagore decouvrit aux anciens grecs
+                        O quadrature vieux tourment du philosophe
+                        insoluble rondeur trop longtemps vous avez
+                        défié pythagore et ses imitateurs
+                        Comment intégrer l espace plan circulaire
+                        Former un triangle auquel il equivaudra
+                        Nouvelle invention archimede inscrira dedans un hexagone
+                        Appreciera son aire fonction du rayon
+                        Pas trop ne s y tiendra dedoublera chaque element anterieur
+                        Toujours de l orbe calculée approchera
+                        Definira limite enfin l arc le limiteur
+                        De cet inquietant cercle ennemi trop rebelle
+                        professeur enseignez son problème avec zèle</small>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@code {
+    [Inject]
+    protected PiState State { get; set; }
+
+    public string PiDecimals = "14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196442881097566593344612847564823378678316527120190914564856692346034861045432664821339360726024914127372458700660631558817488152092096282925409171536436789259036001133053054882046652138414695194151160943305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912";
+
+    public bool ShowPi { get; set; } = false;
+    public bool ShowGenerate { get; set; } = true;
+    public bool ShowText { get; set; } = false;
+    public string Lcp { get; set; } = "";
+    public int LineLength { get; set; } = 10;
+    public int ChunkLength { get; set; } = 2;
+    public string SplitChar { get; set; } = " ";
+    public int NbErrors = 0;
+
+    //private void ShowPiChanged()
+    //{
+    //    ShowPi = !ShowPi;
+    //}
+
+    //private void ShowTextChanged()
+    //{
+    //    ShowText = !ShowText;
+    //}
+
+    private string _test = "";
+    public string Test
+    {
+        get => _test;
+        set
+        {
+            _test = value;
+            Lcp = GetCommonPrefix(PiDecimals, CleanTest);
+
+            if (!string.IsNullOrEmpty(_test) && !ResultIsLongest)
+            {
+                NbErrors += 1;
+            }
+        }
+    }
+
+    public string CleanTest
+    {
+        get => Regex.Replace(Test, @"\n|\r|\s|\t|" + SplitChar, "");
+    }
+
+    private int _testLength = 200;
+    public string TestLength
+    {
+        get => _testLength.ToString();
+        set
+        {
+            Int32.TryParse(value, out _testLength);
+            if (_testLength > PiDecimals.Length)
+            {
+                string pi = State.CalculatePi(_testLength);
+                PiDecimals = pi.Substring(1);
+            }
+            Test = PiDecimals.Substring(0, _testLength);
+            if (LineLength > 0)
+            {
+                Test = SplitText(Test, LineLength, ChunkLength, SplitChar);
+            }
+        }
+    }
+
+    private string _text = "";
+    public string Text
+    {
+        get => _text;
+        set
+        {
+            _text = value;
+            Test = GetWordLengthFromText(Text);
+        }
+    }
+    public bool PiContainsResult
+    {
+        get
+        {
+            return PiDecimals.StartsWith(CleanTest);
+        }
+    }
+    public bool ResultIsLongest
+    {
+        get
+        {
+            return CleanTest.Length == Lcp.Length;
+        }
+    }
+    public string RemainingNumbers
+    {
+        get
+        {
+            return string.IsNullOrEmpty(Lcp) ? "" : CleanTest.Replace(Lcp, "");
+        }
+    }
+
+    public static string GetCommonPrefix(string a, string b)
+    {
+        if (a == null)
+            throw new ArgumentNullException(nameof(a));
+
+        if (b == null)
+            throw new ArgumentNullException(nameof(b));
+
+        var min = Math.Min(a.Length, b.Length);
+        var sb = new StringBuilder(min);
+        for (int i = 0; i < min && a[i] == b[i]; i++)
+            sb.Append(a[i]);
+
+        return sb.ToString();
+    }
+
+    public static string GetWordLengthFromText(string textValue)
+    {
+        string result = string.Empty;
+
+        if (!string.IsNullOrEmpty(textValue))
+        {
+            textValue = Regex.Replace(textValue, @"\t|\n|\r", " ");
+
+            string[] words = textValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            result = string.Join("", words.Select(w => w.Length % 10).ToArray());
+        }
+
+        return result;
+    }
+
+    public static string SplitText(string text, int lineLength, int chunkLength, string splitChar)
+    {
+        string result = text;
+
+        if (lineLength > 0)
+        {
+            result = Regex.Replace(text, "(.{" + lineLength + "})", "$1" + Environment.NewLine);
+        }
+
+        if (chunkLength > 0)
+        {
+            result = Regex.Replace(result, ".{" + chunkLength + "}", "$0" + splitChar).Trim(splitChar.ToCharArray());
+        }
+
+        return result;
+    }
+}
