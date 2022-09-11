@@ -262,7 +262,7 @@
 
         if (!string.IsNullOrEmpty(textValue))
         {
-            textValue = Regex.Replace(textValue, @"\t|\n|\r", " ");
+            textValue = Regex.Replace(textValue, @"\t|\n|\r|'|;|,|:|!|\.|\?", " ");
 
             string[] words = textValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             result = string.Join("", words.Select(w => w.Length % 10).ToArray());
