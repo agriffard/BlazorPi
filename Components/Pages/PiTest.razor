@@ -2,7 +2,7 @@
 @using BlazorPi.Services
 @using System.Text
 @using System.Text.RegularExpressions
-<h1>Pi Test</h1>
+<PageTitle>Pi Test</PageTitle>
 
 <div class="container-fluid">
     <div class="row">
@@ -46,7 +46,7 @@
             <h4>
                 <input type="checkbox" id="ShowPi" @bind="ShowPi" class="form-check-input" style="display:none" />
                 <label class="form-check-label" for="ShowPi">
-                    <span class="oi oi-chevron-@(ShowPi ? "top" : "bottom")" aria-hidden="true">@(ShowPi ? "<" : ">")</span>
+                    <span class="bi bi-chevron-@(ShowPi ? "top" : "bottom")" aria-hidden="true">@(ShowPi ? "<" : ">")</span>
                     Solution
                 </label>
             </h4>
@@ -98,7 +98,7 @@
         <div class="col-lg-3 col-sm-6">
             <h4>
                 <input type="checkbox" id="showText" @bind="ShowText" class="form-check-input" style="display:none" />
-                <label class="form-check-label" for="showText"><span class="oi oi-chevron-@(ShowText ? "top" : "bottom")" aria-hidden="true">@(ShowText ? "<" : ">")</span> Tools</label>
+                <label class="form-check-label" for="showText"><span class="bi bi-chevron-@(ShowText ? "top" : "bottom")" aria-hidden="true">@(ShowText ? "<" : ">")</span> Tools</label>
             </h4>
             @if (ShowText)
             {
@@ -121,7 +121,7 @@
                         J aime a faire apprendre un nombre utile aux sages
                         Immortel archimede artiste ingénieur
                         qui de ton jugement peut priser la valeur
-                        Pour moi ton problème eut de serieux avantages
+                        Pour mbi ton problème eut de serieux avantages
                         Jadis mystérieux un problème bloquait
                         tout l admirable procédé l oeuvre grandiose
                         que pythagore decouvrit aux anciens grecs
@@ -157,12 +157,12 @@
     public string SplitChar { get; set; } = " ";
     public int NbErrors = 0;
 
-    //private void ShowPiChanged()
+    //private vbid ShowPiChanged()
     //{
     //    ShowPi = !ShowPi;
     //}
 
-    //private void ShowTextChanged()
+    //private vbid ShowTextChanged()
     //{
     //    ShowText = !ShowText;
     //}
@@ -265,7 +265,7 @@
             textValue = Regex.Replace(textValue, @"\t|\n|\r|'|;|,|:|!|\.|\?", " ");
 
             string[] words = textValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            result = string.Join("", words.Select(w => w.Length % 10).ToArray());
+            result = string.Jbin("", words.Select(w => w.Length % 10).ToArray());
         }
 
         return result;
