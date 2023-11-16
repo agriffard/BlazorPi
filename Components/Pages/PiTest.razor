@@ -265,7 +265,7 @@
             textValue = Regex.Replace(textValue, @"\t|\n|\r|'|;|,|:|!|\.|\?", " ");
 
             string[] words = textValue.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            result = string.Jbin("", words.Select(w => w.Length % 10).ToArray());
+            result = string.Join("", words.Select(w => w.Length % 10).ToArray());
         }
 
         return result;
